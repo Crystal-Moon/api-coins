@@ -39,12 +39,14 @@ db.getConnection((err, conn)=> {
     conn.query('SELECT 1 + 1 AS conected', error => {
       if (error) console.log('Problemas de conexion con mysql');
       else{ 
-        console.log('Database OK!');
+        console.log('Database status: Se inicio conexion');
         conn.release();
       }
     });
 });
 
-GO('ping').then(r => console.log('GinGecko status:', JSON.stringify(r)));
+GO('ping')
+.then(ok => console.log('CoinGecko status: OK!'))
+.catch(e => console.log('CoinGecko status: Some Error', JSON.stringify(e)))
 
 module.exports=db;

@@ -1,29 +1,21 @@
 const express = require('express');
 const router = express.Router();
 const dbUsers = require('../database/dbUsers');
+const GO = require('../util/GO');
+const RES = require('../util/RES');
 
 router.post('/coins', (req, res)=> {
-  let id_coin = req.body.id_coin || 'someCoin'; 
-// coins/markets?vs_currency=eur&ids=noexists&per_page=1&sparkline=false
-  GO(`coins/markets?vs_currency=${req.who.currency}&ids=${id_coin}&per_page=1`)
+  let id = req.body.id_coin || 'someCoin'; 
+  
+  GO('coins/markets',{ vs_currency: req.who.prefer_currency, ids: id, per_page: 1 })
   .then(coins=>{
-  	console.log('el coin de gecko',coin)
-  	if(!coins[0]) res.status(400).send(new RES.e400(400, 'NOT_FOUND', req.lang, id_coin.toUpperCase()));
+  	if(!coins[0]) res.status(400).send(new RES.e400(400, 'NOT_FOUND', req.lang, id.toUpperCase()));
   	else{
-  	/*  let coin = {
-  		id_user: req.id,
-  		id_coin: coins[0].id,
-  		symbol: coins[0].symbol,
-  		name: coins[0].name,
-  		image: coins[0].image
-  	  }
-  	 */ 
-  	  let coin = (({ id, name, symbol, image })=>({ id_user: req.id, id_coin: id, name, symbol, image }))(coins[0]);
-console.log('el coin a db', coin)
+  	  let coin = (({ id, name, symbol, image })=>({ id_user: req.id, id, name, symbol, image }))(coins[0]);
 
   	  dbUsers.addCoin(coin, (e,ok)=>{
   	  	if(e) res.status(500).send(new RES.error(e));
-  	  	else if(!ok) res.status(400).send(new RES.e400(400, 'EXISTS', req.lang, id_coin.toUpperCase()))
+  	  	else if(!ok) res.status(400).send(new RES.e400(400, 'EXISTS', req.lang, id.toUpperCase()))
   	  	else res.status(201).send(new RES.ok(201, coin));
   	  })
   	}
@@ -36,18 +28,29 @@ router.get('/coins', (req, res)=> {
 
   if(top<1 || top>25) res.status(400).send(new RES.e400(400, 'INVALID_TOP_N', req.lang));
   else users_coins.then(coins=>{
-  	if(!coins.length) res.status(400).send(new RES.e400(400, '', req.lang));
+  	if(!coins.length) res.status(400).send(new RES.e400(400, 'NO_USER_COINS', req.lang));
   	else{
-
-  	let go=(currency)=> GO(`simple/price?ids=${coins.join()}`)
+// https://api.coingecko.com/api/v3/simple/price?ids=bitcoin%2Cnoexists%2Cethereum&vs_currencies=usd&include_last_updated_at=true
+  	  let go=(currency)=> GO('simple/price', 
+  	  	{ ids: coins.map(c=>c.id), vs_currencies: currency, include_last_updated_at: true })
   	
-  	Promise.all([go('usd'), go('ars'), go('eur')])
-  	.then()
+  	  Promise.all([go('ars'), go('usd'), go('eur')])
+  	  .then(pp=>{
+  //console.log('el data de las tres fetch',pp);
 
+  	  	coins.forEach(c=>{
+  	  		console.log('el c en el map',c)
+  	  		c.ars_price = pp[0][c.id].ars
+  	  		c.usd_price = pp[1][c.id].usd
+  	  		c.eur_price = pp[2][c.id].eur
+  	  		c.last_update = pp[2][c.id].last_updated_at
+  	  	})
 
-  })
-  	}
- 
+  	  	res.status(200).send(new RES.ok(200, coins))
+  	  })
+  	  .catch(e=> res.status(500).send(new RES.error(e)))
+    }
+  });
 });
 
 router.get('/coins/:id', (req, res)=> {

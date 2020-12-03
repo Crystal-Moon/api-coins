@@ -41,7 +41,7 @@ module.exports = {
 	},
 	prefer_top: {
 		type: 'number',
-		format: x => x<0 && x<=25? false :
+		format: x => x>0 && x<=25? false :
 		{
 			es: 'elegir un valor entre 1 y 25',
 			en: 'chose a value between 1 and 25'

@@ -18,15 +18,19 @@ module.exports={
 	INVALID_TOP_N: {
 		es: 'Use un valor entre 1 y 25',
 		en: 'Use a value between 1 and 25'
-	}
-	NO_TOKEN: {
-		es: 'No hay token de autorixacion en los headers.',
-		en: 'Not found token in headers',
 	},
 	NO_REGISTER: {
 		es: 'El usuario no esta registrado',
 		en: 'User not register'
-	}
+	},
+	NO_TOKEN: {
+		es: 'No hay token de autorixacion en los headers.',
+		en: 'Not found token in headers',
+	},
+	NO_USER_COINS: {
+		es: 'No hay seguimiento a ninguna moneda.',
+		en: 'There is no tracking to any currency.'
+	},
 	NOT_FOUND: {
 		es: ' no encontrado.',
 		es: ' not found.'

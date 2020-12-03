@@ -24,8 +24,8 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('', middleToken);
 app.use('/index', indexRouter);
+app.use('', middleToken);
 app.use('/coins', coinsRouter);
 app.use('/users', usersRouter);
 

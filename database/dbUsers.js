@@ -52,12 +52,11 @@ const addCoin = ({ id_user, id_coin, name, symbol, image },cb)=>{
  .finally(()=>c.release())
 }
 
-const getCoins = ({ id_user, id_coin, name, symbol, image },cb)=>{
+const getCoins = (id_user, cb)=>{
  let c=0;
  getConn().then(conn=>{ c=conn;
-    conn.query(`SELECT id_coin FROM users_coins WHERE id_user=?`,[id_user], (e,data)=> {  
-  console.log('el r de de getCoin',e,data)
-      cb(e? [] : data.map(c=>c.id_coin)); 
+    conn.query(`SELECT id_coin as id, symbol, name, image FROM users_coins WHERE id_user=?`,[id_user], (e,data)=> {
+      cb(e? [] : data);
     });
  })
  .catch(e=>cb(e))

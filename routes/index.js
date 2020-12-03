@@ -17,7 +17,7 @@ router.post('/create', async(req,res)=> {
 	  username: req.body.username,
 	  pass: req.body.pass,
 	  prefer_currency: req.body.prefer_currency || 'usd',
-    prefer_top: req.body.prefer_top || 25
+    prefer_top: req.body.prefer_top || 10
   }
   let lang = /(es|en)/.test(req.body.lang)? req.body.lang : 'es';
 
@@ -46,13 +46,13 @@ router.post('/login', (req, res)=> {
   }
   let lang = /(es|en)/.test(req.query.lang)? req.query.lang : 'es';
 
-  auth.verifyUser(usr, (e, login, user)=> {
+  auth.verifyUser(usr, (e, auth, user)=> {
     if(e) res.status(500).send(new RES.error(e));
-    else if(!login) res.status(400).send(new RES.e400(400, 'BAD_LOGIN', lang));
-    else if(typeof login == 'string') res.status(400).send(new RES.e400(400, login, lang));
+    else if(!auth) res.status(400).send(new RES.e400(400, 'BAD_LOGIN', lang));
+    else if(typeof auth == 'string') res.status(400).send(new RES.e400(400, auth, lang));
     else{
       let { pass, ...profile } = user;
-      res.status(200).send(new RES.ok(201, { auth: auth.objAuth(login), profile }));
+      res.status(200).send(new RES.ok(201, { auth, profile }));
     }
   });
 });
