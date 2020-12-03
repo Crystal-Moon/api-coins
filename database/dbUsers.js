@@ -36,6 +36,15 @@ const saveUser = (user, cb)=> {
  .finally(()=>c.release())
 }
 
+const updateUser = (user, cb)=>{
+ let c=0;
+ getConn().then(conn=>{ c=conn;
+    conn.query(`UPDATE users SET ? WHERE id=?`,[user, user.id], e=> { cb(e? new db_error(e) : 0) });
+ })
+ .catch(e=>cb(e))
+ .finally(()=>c.release())
+}
+
 const addCoin = ({ id_user, id_coin, name, symbol, image },cb)=>{
  let c=0;
  getConn().then(conn=>{ c=conn;
@@ -55,7 +64,8 @@ const addCoin = ({ id_user, id_coin, name, symbol, image },cb)=>{
 const getCoins = (id_user, cb)=>{
  let c=0;
  getConn().then(conn=>{ c=conn;
-    conn.query(`SELECT id_coin as id, symbol, name, image FROM users_coins WHERE id_user=?`,[id_user], (e,data)=> {
+    conn.query(`SELECT id_coin as id, symbol, name, image 
+      FROM users_coins WHERE id_user=? AND is_erase=false`,[id_user], (e,data)=> {
       cb(e? [] : data);
     });
  })
@@ -63,90 +73,20 @@ const getCoins = (id_user, cb)=>{
  .finally(()=>c.release())
 }
 
+const deleteCoin = (id_user, cb)=>{
+ let c=0;
+ getConn().then(conn=>{ c=conn;
+    conn.query(`UPDATE users_coins SET is_erase=true WHERE id_coin=? AND id_user=?`,[id_coin, id_user])
+    cb();
+ })
+ .catch(e=>cb(e))
+ .finally(()=>c.release())
+}
+
 exports.saveUser=saveUser;
 exports.authUser=authUser;
+exports.updateUser=updateUser;
 
 exports.addCoin=addCoin;
 exports.getCoins=getCoins;
-
-
-
-
-
-
-/////////////////////////////////////////////////////////////////////////7----------------------------------
-
-
-/*
-
-const getCodeVerity = (code,cb)=>{
- let c=0;
- getConn().then(conn=>{ c=conn;
-  conn.query(`SELECT id, name, last_name, email, username, pass, concat(name,' ',last_name) as fullName, 
-      ban, fb_id, ggl_id, lang, hash_active FROM users WHERE hash_active like '${code}%' 
-      AND register_date > date_sub(now(),interval 20 minute) ORDER BY id DESC;`,[],(e,data)=>{
-    if(e) cb(new db_error(e));
-    else if(data.length==0) cb(0,'CODE_REGISTER_BAD');
-    else {
-      let time= parseInt(data[0].hash_active.split('#')[1]);
-      if(new Date().getTime() - 132000 > time) cb(0,'CODE_REGISTER_EXPIRED'); //132000 = 2.2 minutos
-      else cb(0,0,data[0]);
-    } 
-  });
- })
- .catch(e=>cb(e))
- .finally(()=>c.release())
-}
-
-const activeUser= (id,cb)=>{
- let c=0;
- getConn().then(conn=>{ c=conn;
-  conn.query(`UPDATE users SET is_active=true WHERE id=?;`,id, e=>{
-    cb(e? new db_error(e) : 0)
-  });
- })
- .catch(e=>cb(e))
- .finally(()=>c.release())
-}
-
-const refreshCode=(user,code,cb)=>{
- authUser(user,(er,u)=>{
-  if(er) cb(er);
-  else if(!u) cb(0,'NO_REGISTER');
-  else getConn().then(conn=>{
-    u.active=code;
-    console.log('el codigo nuevo ',u.active);
-    conn.query(`UPDATE users SET hash_active=?, register_date=now() WHERE id=?;`,[code.hash,u.id],e=>{ 
-      conn.release();
-      cb(e? new db_error(e) : 0, u) 
-    });
-  })
-  .catch(e=>cb(e))
- })
-}
-
-
-
-const oneChangePass=(id,cb)=>{
- let c=0;
- getConn().then(conn=>{ c=conn;
-    conn.query(`SELECT id, date_pass, now() as ahora FROM users WHERE id=?;
-          UPDATE users SET date_pass=null WHERE id=?;`,[id,id],(e,data)=>{
-      if(e) cb(new db_error(e));
-      else if(data[0].length==0) cb(null,'NO_REGISTER');
-      else cb(null,data[0][0]); 
-    });
- })
- .catch(e=>cb(e))
- .finally(()=>c.release())
-}
-
-exports.getCodeVerity=getCodeVerity;
-exports.activeUser=activeUser;
-exports.refreshCode=refreshCode;
-
-
-
-exports.oneChangePass=oneChangePass;
-
-*/
+exports.deleteCoin=deleteCoin;

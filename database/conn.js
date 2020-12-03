@@ -1,5 +1,5 @@
 const mysql = require('mysql');
-const GO = require('../util/GO');
+const CoinGecko = require('../util/CoinGecko');
 
 const pool={	//final
     connectionLimit : 1000,
@@ -45,7 +45,7 @@ db.getConnection((err, conn)=> {
     });
 });
 
-GO('ping')
+CoinGecko('ping')
 .then(ok => console.log('CoinGecko status: OK!'))
 .catch(e => console.log('CoinGecko status: Some Error', JSON.stringify(e)))
 

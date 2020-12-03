@@ -13,7 +13,7 @@ router.use((req,res,next)=>{
     auth.decodeToken(t,(e,user)=>{
       if(e||!user.id) res.status(401).send(new RES.e400(401,'BAD_TOKEN','es'));
       else{
-        req.id=user.id;
+        req.id=parseInt(user.id);
         req.who=user;
         req.lang= (user.lang)? user.lang.toLowerCase() : 'es' ;
         next();
