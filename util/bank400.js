@@ -15,6 +15,10 @@ module.exports={
 		es: '',
 		en: ''
 	},
+	INVALID_TOP_N: {
+		es: 'Use un valor entre 1 y 25',
+		en: 'Use a value between 1 and 25'
+	}
 	NO_TOKEN: {
 		es: 'No hay token de autorixacion en los headers.',
 		en: 'Not found token in headers',
@@ -22,6 +26,10 @@ module.exports={
 	NO_REGISTER: {
 		es: 'El usuario no esta registrado',
 		en: 'User not register'
+	}
+	NOT_FOUND: {
+		es: ' no encontrado.',
+		es: ' not found.'
 	}
 	
 }

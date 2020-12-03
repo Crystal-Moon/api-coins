@@ -31,12 +31,20 @@ module.exports = {
 			en: 'must has between 8 y 20 caracters, only letters and numbers'
 		}
 	},
-	currency: {
+	prefer_currency: {
 		type: 'string',
 		format: x => /(usd|eur|ars)/.test(String(x).toLowerCase())? false :
 		{
 			es: 'use "usd" o "eur" o "ars" ',
 			en: 'use "usd" or "eur" or "ars" '
 		}
-	}
+	},
+	prefer_top: {
+		type: 'number',
+		format: x => x<0 && x<=25? false :
+		{
+			es: 'elegir un valor entre 1 y 25',
+			en: 'chose a value between 1 and 25'
+		}
+	},
 }

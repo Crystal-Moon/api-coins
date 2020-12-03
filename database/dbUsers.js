@@ -9,7 +9,7 @@ const getConn=()=>new Promise((done,fail)=>{ db.getConnection((err,conn)=>{
 const authUser = (user,cb)=>{
  let c=0;
  getConn().then(conn=>{ c=conn;
-    conn.query(`SELECT id, name, last_name, username, pass, currency, lang 
+    conn.query(`SELECT id, name, last_name, username, pass, prefer_currency, prefer_top, lang 
       FROM users WHERE username=?`,[user.username],(e,data)=>{  
       if(e) cb(new db_error(e))
       else cb(0,data[0]); 
@@ -36,8 +36,39 @@ const saveUser = (user, cb)=> {
  .finally(()=>c.release())
 }
 
+const addCoin = ({ id_user, id_coin, name, symbol, image },cb)=>{
+ let c=0;
+ getConn().then(conn=>{ c=conn;
+    conn.query(`INSERT INTO users_coins (id_user, id_coin, name, symbol, image) 
+        SELECT * FROM (SELECT ? as id_u, ? as id_c, ? as n_c, ? as s_c, ? as i_c) AS tmp
+        WHERE NOT EXISTS (SELECT id_user FROM users_coins WHERE id_user=? AND id_coin=?) LIMIT 1;`,
+      [ id_user, id_coin, name, symbol, image, id_user, id_coin ], (e,data)=> {  
+  console.log('el r de addCoin',e,data)
+      if(e) cb(new db_error(e))
+      else cb(0,data.insertId); 
+    });
+ })
+ .catch(e=>cb(e))
+ .finally(()=>c.release())
+}
+
+const getCoins = ({ id_user, id_coin, name, symbol, image },cb)=>{
+ let c=0;
+ getConn().then(conn=>{ c=conn;
+    conn.query(`SELECT id_coin FROM users_coins WHERE id_user=?`,[id_user], (e,data)=> {  
+  console.log('el r de de getCoin',e,data)
+      cb(e? [] : data.map(c=>c.id_coin)); 
+    });
+ })
+ .catch(e=>cb(e))
+ .finally(()=>c.release())
+}
+
 exports.saveUser=saveUser;
 exports.authUser=authUser;
+
+exports.addCoin=addCoin;
+exports.getCoins=getCoins;
 
 
 

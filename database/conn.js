@@ -1,4 +1,5 @@
 const mysql = require('mysql');
+const GO = require('../util/GO');
 
 const pool={	//final
     connectionLimit : 1000,
@@ -38,10 +39,12 @@ db.getConnection((err, conn)=> {
     conn.query('SELECT 1 + 1 AS conected', error => {
       if (error) console.log('Problemas de conexion con mysql');
       else{ 
-        console.log('se establecio conexion');
+        console.log('Database OK!');
         conn.release();
       }
     });
 });
+
+GO('ping').then(r => console.log('GinGecko status:', JSON.stringify(r)));
 
 module.exports=db;

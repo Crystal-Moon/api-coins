@@ -16,7 +16,8 @@ router.post('/create', async(req,res)=> {
 	  last_name: req.body.last_name,
 	  username: req.body.username,
 	  pass: req.body.pass,
-	  currency: req.body.currency || 'usd'
+	  prefer_currency: req.body.prefer_currency || 'usd',
+    prefer_top: req.body.prefer_top || 25
   }
   let lang = /(es|en)/.test(req.body.lang)? req.body.lang : 'es';
 
