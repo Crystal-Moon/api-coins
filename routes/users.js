@@ -1,11 +1,11 @@
-const express = require('express');
-const router = express.Router();
-const dbUsers = require('../database/dbUsers');
-const CoinGecko = require('../util/CoinGecko');
-const RES = require('../util/RES');
 
-router.post('/coins', (req, res)=> {
-  let id = req.body.id || 'someCoin'; 
+module.exports = (dbUsers,CoinGecko,verify,RES)=> {
+
+ const { verifyFields } = verify;
+
+ return {
+ addCoin: (req, res)=> {
+  let id = req.body.id || 'No_exists'; 
   let currency = req.who.prefer_currency;
   
   CoinGecko.getOneCoin(id, currency)
@@ -21,11 +21,11 @@ router.post('/coins', (req, res)=> {
   	  })
   	}
   })
-});
+ },
 
-router.get('/coins', (req, res)=> {
+ getCoins: (req, res)=> {
   let top = req.query.top || req.who.prefer_top || 25;
-  let users_coins = new Promise(done=> dbUsers.getCoins(req.id, coins=> done(coins)))
+  let users_coins = new Promise(done=> dbUsers.getCoins(req.id, top, coins=> done(coins)))
 
   if(top<1 || top>25) res.status(400).send(new RES.e400(400, 'INVALID_TOP_N', req.lang));
   else users_coins.then(coins=>{
@@ -33,7 +33,7 @@ router.get('/coins', (req, res)=> {
   	else
       CoinGecko.getPrices(coins.map(c=>c.id))
   	  .then(geckoData=>{
-        let funcOrder = req.query.order=='asc'? (a,b)=>a.eur_price - b.eur_price : (a,b)=>b.eur_price - a.eur_price;
+        let funcOrder = req.query.order=='asc'? (a,b)=>a.eur - b.eur : (a,b)=>b.eur - a.eur;
   	  	
         coins = coins.map(c=> ({ ...c, ...geckoData[c.id] }));
         coins = coins.sort(funcOrder);
@@ -42,28 +42,28 @@ router.get('/coins', (req, res)=> {
   	  })
   	  .catch(e=> res.status(400).send(new RES.e400(400, 'GECKO_ERROR', req.lang, JSON.stringify(e))))
   });
-});
+ },
 
-router.delete('/coins/:id', (req, res)=> {
+ deleteCoin: (req, res)=> {
   let id = req.params.id;
   dbUsers.deleteCoin(req.id, id);
   res.status(204).send(new RES.ok(204))
-});
+ },
 
-router.put('/', async(req,res)=>{
+ updateUser: async(req,res)=>{
   let edit = {
     id: req.id,
     prefer_top: req.body.prefer_top || 10,
     prefer_currency: req.body.prefer_currency || 'usd'
   }
 
-  let bad = await verifyFields(edit, req.lang)
+  let bad = await verifyFields('users',edit, req.lang)
   if(bad) res.status(400).send(new RES.e400(400, 'INPUT_ERROR', req.lang, bad))
   else
     dbUsers.updateUser(edit, (e,ok)=>{
       if(e) res.status(500).send(new RES.error(e))
       else res.status(204).send(new RES.ok(204))
     })
-});
-
-module.exports = router;
+ }
+ }
+}

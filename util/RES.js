@@ -1,6 +1,6 @@
-const E400=require('./bank400');
 
-module.exports={
+module.exports= (E400)=>{
+ return {
   ok: class {
     constructor(status, data={}, type='object') {
       this.success = true;
@@ -39,4 +39,5 @@ module.exports={
       console.log('DB_ERROR',e);
     }
   }
+ }
 }
