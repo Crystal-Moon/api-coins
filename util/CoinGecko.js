@@ -19,9 +19,11 @@ module.exports = {
 	getOneCoin: (id, vs_currency)=> {
 		return GO('coins/markets',{ vs_currency, ids: id, per_page: 1 })
 	},
+
 	getPrices: (ids)=> {
 		return GO('simple/price', { ids, vs_currencies: ['usd','ars','eur'], include_last_updated_at: true })
 	},
+	
 	getAllCoins: (vs_currency, page, per_page)=> {
 		return GO('coins/markets', { vs_currency, per_page, page }).then(cc=>
 			cc.map(

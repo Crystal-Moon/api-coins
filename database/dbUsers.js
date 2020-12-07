@@ -20,11 +20,6 @@ const authUser = (user,cb)=>{
 }
 
 const saveUser = (user, cb)=> {
-/*  user.name=user.name.trim();
-  if(user.name[0]) user.name=user.name[0].toUpperCase()+user.name.slice(1);
-  user.last_name=user.last_name.trim();
-  if(user.last_name[0]) user.last_name=user.last_name[0].toUpperCase()+user.last_name.slice(1);
-*/
  let c=0;
  getConn().then(conn=>{ c=conn;
     conn.query('INSERT INTO users SET ?;',[user], (e,d)=>{
@@ -51,8 +46,7 @@ const addCoin = ({ id_user, id_coin, name, symbol, image },cb)=>{
     conn.query(`INSERT INTO users_coins (id_user, id_coin, name, symbol, image) 
         SELECT * FROM (SELECT ? as id_u, ? as id_c, ? as n_c, ? as s_c, ? as i_c) AS tmp
         WHERE NOT EXISTS (SELECT id_user FROM users_coins WHERE id_user=? AND id_coin=?) LIMIT 1;`,
-      [ id_user, id_coin, name, symbol, image, id_user, id_coin ], (e,data)=> {  
-  console.log('el r de addCoin',e,data)
+      [ id_user, id_coin, name, symbol, image, id_user, id_coin ], (e,data)=> {
       if(e) cb(new db_error(e))
       else cb(0,data.insertId); 
     });

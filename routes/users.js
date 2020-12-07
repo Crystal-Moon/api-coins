@@ -5,7 +5,7 @@ const CoinGecko = require('../util/CoinGecko');
 const RES = require('../util/RES');
 
 router.post('/coins', (req, res)=> {
-  let id = req.body.id_coin || 'someCoin'; 
+  let id = req.body.id || 'someCoin'; 
   let currency = req.who.prefer_currency;
   
   CoinGecko.getOneCoin(id, currency)
@@ -53,8 +53,8 @@ router.delete('/coins/:id', (req, res)=> {
 router.put('/', async(req,res)=>{
   let edit = {
     id: req.id,
-    prefer_top: req.body.prefer_top,
-    prefer_currency: req.body.prefer_currency
+    prefer_top: req.body.prefer_top || 10,
+    prefer_currency: req.body.prefer_currency || 'usd'
   }
 
   let bad = await verifyFields(edit, req.lang)
