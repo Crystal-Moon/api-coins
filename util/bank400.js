@@ -11,6 +11,10 @@ module.exports={
 		es: ' ya existe.',
 		en: ' already exists'
 	},
+	GECKO_ERROR: {
+		es: '',
+		en: ''
+	},
 	INPUT_ERROR: {
 		es: '',
 		en: ''
@@ -18,6 +22,10 @@ module.exports={
 	INVALID_TOP_N: {
 		es: 'Use un valor entre 1 y 25',
 		en: 'Use a value between 1 and 25'
+	},
+	NAN: {
+		es: ' no es numero valido',
+		en: ' isn\'t number'
 	},
 	NO_REGISTER: {
 		es: 'El usuario no esta registrado',

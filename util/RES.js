@@ -6,7 +6,7 @@ module.exports={
       this.success = true;
 		  this.status_code = status;
       this.payload_type = type;
-		  this.payload = payload;
+		  this.payload = data;
 		  this.error = null;
     }
   },

@@ -6,8 +6,9 @@ const RES = require('../util/RES');
 
 router.post('/coins', (req, res)=> {
   let id = req.body.id_coin || 'someCoin'; 
+  let currency = req.who.prefer_currency;
   
-  CoinGecko('coins/markets',{ vs_currency: req.who.prefer_currency, ids: id, per_page: 1 })
+  CoinGecko.getOneCoin(id, currency)
   .then(coins=>{
   	if(!coins[0]) res.status(400).send(new RES.e400(400, 'NOT_FOUND', req.lang, id.toUpperCase()));
   	else{
@@ -29,29 +30,17 @@ router.get('/coins', (req, res)=> {
   if(top<1 || top>25) res.status(400).send(new RES.e400(400, 'INVALID_TOP_N', req.lang));
   else users_coins.then(coins=>{
   	if(!coins.length) res.status(400).send(new RES.e400(400, 'NO_USER_COINS', req.lang));
-  	else{
-// https://api.coingecko.com/api/v3/simple/price?ids=bitcoin%2Cnoexists%2Cethereum&vs_currencies=usd&include_last_updated_at=true
-  	  let go=(currency)=> 
-          CoinGecko('simple/price',{ ids: coins.map(c=>c.id), vs_currencies: currency, include_last_updated_at: true })
-  	
-  	  Promise.all([go('ars'), go('usd'), go('eur')])
-  	  .then(pp=>{
-  //console.log('el data de las tres fetch',pp);        
-
-  	  	coins.forEach(c=>{
-  	  		c.ars_price = pp[0][c.id].ars
-  	  		c.usd_price = pp[1][c.id].usd
-  	  		c.eur_price = pp[2][c.id].eur
-  	  		c.last_update = pp[2][c.id].last_updated_at
-  	  	});
-
+  	else
+      CoinGecko.getPrices(coins.map(c=>c.id))
+  	  .then(geckoData=>{
         let funcOrder = req.query.order=='asc'? (a,b)=>a.eur_price - b.eur_price : (a,b)=>b.eur_price - a.eur_price;
-        coins=coins.sort(funcOrder);
+  	  	
+        coins = coins.map(c=> ({ ...c, ...geckoData[c.id] }));
+        coins = coins.sort(funcOrder);
 
   	  	res.status(200).send(new RES.ok(200, coins, 'array'))
   	  })
-  	  .catch(e=> res.status(500).send(new RES.error(e)))
-    }
+  	  .catch(e=> res.status(400).send(new RES.e400(400, 'GECKO_ERROR', req.lang, JSON.stringify(e))))
   });
 });
 
