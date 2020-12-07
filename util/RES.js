@@ -1,22 +1,12 @@
 const E400=require('./bank400');
 
 module.exports={
-  /*
-	full: class{
-	  constructor(success, statusCode, data, e){
-		  this.success = success;
-		  this.status_code = statusCode;
-		  this.data = data;
-		  this.error = e;
-	  }
-  },
-  */
-
   ok: class {
-    constructor(status, data={}) {
+    constructor(status, data={}, type='object') {
       this.success = true;
 		  this.status_code = status;
-		  this.data = data;
+      this.payload_type = type;
+		  this.payload = payload;
 		  this.error = null;
     }
   },
@@ -25,7 +15,8 @@ module.exports={
     constructor(status, code, l='es', add='') {
       this.success = true;
 		  this.status_code = status;
-		  this.data = null;
+      this.payload_type = 'object';
+		  this.payload = null;
 		  this.error = { code, message: add + E400[code][l] };
     }
   },
@@ -34,7 +25,8 @@ module.exports={
     constructor(e) {
       this.success = false;
 		  this.status_code = 500;
-		  this.data = null;
+      this.payload_type = 'object';
+		  this.payload = null;
 		  this.error = e;
     }
   },

@@ -48,7 +48,7 @@ router.get('/coins', (req, res)=> {
         let funcOrder = req.query.order=='asc'? (a,b)=>a.eur_price - b.eur_price : (a,b)=>b.eur_price - a.eur_price;
         coins=coins.sort(funcOrder);
 
-  	  	res.status(200).send(new RES.ok(200, coins))
+  	  	res.status(200).send(new RES.ok(200, coins, 'array'))
   	  })
   	  .catch(e=> res.status(500).send(new RES.error(e)))
     }
