@@ -19,17 +19,30 @@ serviceLocator.factory('dbUsers', require('./database/dbUsers'));
 //serviceLocator.factory('userService', require('./lib/userService'));
 serviceLocator.factory('usersRouter', usersRouter);
 */
+const jwt= require('jsonwebtoken');
+const fetch = require('node-fetch');
+const buildUrl = require('build-url');
+const mysql = require('mysql');
+
+
 const RES = require('./util/RES')
-const CoinGecko = require('./util/CoinGecko');
-const auth = require('./util/verify/auth');
+const CoinGecko = require('./util/CoinGecko')(fetch, buildUrl);
+
 const verify = require('./util/verify/verify');
 
-const db = require('./database/conn');
-const dbUsers = require('./database/dbUsers')(RES,db);
+const db = require('./database/conn')(mysql);
+const dbUsers = require('./database/dbUsers')(RES,db.db);
+const auth = require('./util/verify/auth')(jwt,dbUsers);
 const indexRouter = require('./routes/index')(dbUsers,auth,verify,RES)
 const usersRouter = require('./routes/users')(dbUsers,CoinGecko,RES);
 
+db.status()
+.then(() => console.log('Database status: OK!'))
+.catch(e => console.log('Database status: Some Error', e))
 
+CoinGecko.status()
+.then(() => console.log('CoinGecko status: OK!'))
+.catch(() => console.log('CoinGecko status: Not Avalible :('))
 
 const app = express();
 

@@ -1,7 +1,11 @@
 
-const fetch = require('node-fetch');
-const buildUrl = require('build-url');
+
+
+module.exports = (fetch, buildUrl)=>{
+
+
 const SERVER_GINGECKO='https://api.coingecko.com/api/v3';
+
 
 const GO = (path, queryParams) => {
 
@@ -13,7 +17,9 @@ console.log('final urll',final_url)
 
 }
 
-module.exports = {
+
+
+return {
 	status: ()=> GO('ping'),
 
 	getOneCoin: (id, vs_currency)=> {
@@ -32,5 +38,7 @@ module.exports = {
 			)
 		)
 	},
+
+}
 
 }

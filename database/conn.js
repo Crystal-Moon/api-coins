@@ -1,5 +1,8 @@
-const mysql = require('mysql');
-const CoinGecko = require('../util/CoinGecko');
+
+//const CoinGecko = require('../util/CoinGecko');
+
+module.exports=(mysql, CoinGecko)=>{
+
 
 const pool={
     connectionLimit : 1000,
@@ -18,19 +21,16 @@ const pool={
 const db = mysql.createPool(pool);
 
 //conexion de prueba
-db.getConnection((err, conn)=> {
-  if(err) console.log('No se pude crear conexion.',err.toString())
-  else conn.query('SELECT 1 + 1 AS conected', error => {
-    if (error) console.log('Problemas de conexion con mysql');
-    else{ 
-      console.log('Database status: Se inicio conexion');
-      conn.release();
-    }
-  });
-});
 
-CoinGecko.status()
-.then(() => console.log('CoinGecko status: OK!'))
-.catch(() => console.log('CoinGecko status: Not Avalible :('))
 
-module.exports=db;
+
+
+return {
+  db,
+  status: ()=> new Promise((done,fail)=>{ db.getConnection((err, conn)=> {
+     if(err) fail(JSON.stringify(e)); else{ conn.release(); done() } })
+  })
+}
+
+}
+//module.exports=db;
