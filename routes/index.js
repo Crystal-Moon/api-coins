@@ -1,16 +1,21 @@
-const express = require('express');
-const router = express.Router();
+//const express = require('express');
+//const router = express.Router();
 
-const { verifyFields } =  require('../util/verify/verify');
-const dbUsers = require('../database/dbUsers');
-const auth = require('../util/verify/auth');
-const RES = require('../util/RES');
+//const { verifyFields } =  require('../util/verify/verify');
+//const dbUsers = require('../database/dbUsers');
+//const auth = require('../util/verify/auth');
+//const RES = require('../util/RES');
 
-router.get('/', (req, res)=> {
+module.exports = (dbUsers,auth,verify,RES)=> {
+
+  const { verifyFields } = auth;
+
+  return {
+ index: (req, res)=> {
   res.render('index', { title: 'Api-Coins' });
-});
+},
 
-router.post('/create', async(req,res)=> {
+ create: async(req,res)=> {
   let newUser = {
 	  name: req.body.name,
 	  last_name: req.body.last_name,
@@ -37,9 +42,9 @@ router.post('/create', async(req,res)=> {
       })
     })
   }
-});
+},
 
-router.post('/login', (req, res)=> {
+ login: (req, res)=> {
   let usr = {
     username: req.body.username,
     pass: req.body.pass
@@ -55,7 +60,9 @@ router.post('/login', (req, res)=> {
       res.status(200).send(new RES.ok(201, { auth, profile }));
     }
   });
-});
+}
+
+}}
 
 
-module.exports = router;
+//module.exports = router;

@@ -1,10 +1,19 @@
+/*
 const express = require('express');
 const router = express.Router();
 const dbUsers = require('../database/dbUsers');
 const CoinGecko = require('../util/CoinGecko');
 const RES = require('../util/RES');
+*/
 
-router.post('/coins', (req, res)=> {
+module.exports = (dbUsers,CoinGecko,RES)=> {
+ //express = require('express')
+ //router = express.Router()
+ //dbUsers = require('../database/dbUsers')
+ //CoinGecko = require('../util/CoinGecko')
+ //RES = require('../util/RES')
+ return {
+ addCoin: (req, res)=> {
   let id = req.body.id || 'someCoin'; 
   let currency = req.who.prefer_currency;
   
@@ -21,9 +30,9 @@ router.post('/coins', (req, res)=> {
   	  })
   	}
   })
-});
+},
 
-router.get('/coins', (req, res)=> {
+ getCoins: (req, res)=> {
   let top = req.query.top || req.who.prefer_top || 25;
   let users_coins = new Promise(done=> dbUsers.getCoins(req.id, coins=> done(coins)))
 
@@ -42,15 +51,16 @@ router.get('/coins', (req, res)=> {
   	  })
   	  .catch(e=> res.status(400).send(new RES.e400(400, 'GECKO_ERROR', req.lang, JSON.stringify(e))))
   });
-});
+},
 
-router.delete('/coins/:id', (req, res)=> {
+ deleteCoin: (req, res)=> {
   let id = req.params.id;
   dbUsers.deleteCoin(req.id, id);
   res.status(204).send(new RES.ok(204))
-});
+},
 
-router.put('/', async(req,res)=>{
+
+ updateUser: async(req,res)=>{
   let edit = {
     id: req.id,
     prefer_top: req.body.prefer_top || 10,
@@ -64,6 +74,9 @@ router.put('/', async(req,res)=>{
       if(e) res.status(500).send(new RES.error(e))
       else res.status(204).send(new RES.ok(204))
     })
-});
+}
 
-module.exports = router;
+}
+}
+
+//module.exports = router;

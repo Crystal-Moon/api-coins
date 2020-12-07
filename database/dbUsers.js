@@ -1,12 +1,18 @@
 
-const db = require('./conn');
-const { db_error }=require('../util/RES');
+module.exports = (RES,db)=>{
+//const db = require('./conn');
+ const { db_error } = RES;
 
-const getConn=()=>new Promise((done,fail)=>{ db.getConnection((err,conn)=>{
+ const getConn=()=>new Promise((done,fail)=>{ db.getConnection((err,conn)=>{
   if(err) fail(new db_error(err,'NOT_CONECTION')); else done(conn) })
-});
+  });
 
-const authUser = (user,cb)=>{
+
+  return {
+ 
+
+
+ authUser : (user,cb)=>{
  let c=0;
  getConn().then(conn=>{ c=conn;
     conn.query(`SELECT id, name, last_name, username, pass, prefer_currency, prefer_top, lang 
@@ -17,9 +23,9 @@ const authUser = (user,cb)=>{
  })
  .catch(e=>cb(e))
  .finally(()=>c.release())
-}
+},
 
-const saveUser = (user, cb)=> {
+ saveUser : (user, cb)=> {
  let c=0;
  getConn().then(conn=>{ c=conn;
     conn.query('INSERT INTO users SET ?;',[user], (e,d)=>{
@@ -29,18 +35,18 @@ const saveUser = (user, cb)=> {
  })
  .catch(e=>cb(e))
  .finally(()=>c.release())
-}
+},
 
-const updateUser = (user, cb)=>{
+ updateUser : (user, cb)=>{
  let c=0;
  getConn().then(conn=>{ c=conn;
     conn.query(`UPDATE users SET ? WHERE id=?`,[user, user.id], e=> { cb(e? new db_error(e) : 0) });
  })
  .catch(e=>cb(e))
  .finally(()=>c.release())
-}
+},
 
-const addCoin = ({ id_user, id, name, symbol, image },cb)=>{
+ addCoin : ({ id_user, id, name, symbol, image },cb)=>{
  let c=0;
  getConn().then(conn=>{ c=conn;
     conn.query(`INSERT INTO users_coins (id_user, id_coin, name, symbol, image) 
@@ -53,9 +59,9 @@ const addCoin = ({ id_user, id, name, symbol, image },cb)=>{
  })
  .catch(e=>cb(e))
  .finally(()=>c.release())
-}
+},
 
-const getCoins = (id_user, cb)=>{
+ getCoins : (id_user, cb)=>{
  let c=0;
  getConn().then(conn=>{ c=conn;
     conn.query(`SELECT id_coin as id, symbol, name, image 
@@ -65,9 +71,9 @@ const getCoins = (id_user, cb)=>{
  })
  .catch(e=>cb(e))
  .finally(()=>c.release())
-}
+},
 
-const deleteCoin = (id_user, cb)=>{
+ deleteCoin : (id_user, cb)=>{
  let c=0;
  getConn().then(conn=>{ c=conn;
     conn.query(`UPDATE users_coins SET is_erase=true WHERE id_coin=? AND id_user=?`,[id_coin, id_user])
@@ -76,7 +82,10 @@ const deleteCoin = (id_user, cb)=>{
  .catch(e=>cb(e))
  .finally(()=>c.release())
 }
+}
+}
 
+/*
 exports.saveUser=saveUser;
 exports.authUser=authUser;
 exports.updateUser=updateUser;
@@ -84,3 +93,4 @@ exports.updateUser=updateUser;
 exports.addCoin=addCoin;
 exports.getCoins=getCoins;
 exports.deleteCoin=deleteCoin;
+*/

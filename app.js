@@ -6,10 +6,30 @@ const logger = require('morgan');
 
 require('dotenv').config();
 
-const indexRouter = require('./routes/index');
-const usersRouter = require('./routes/users');
+//const indexRouter = require('./routes/index');
+//const usersRouter = require('./routes/users');
 const coinsRouter = require('./routes/coins');
 const middleToken = require('./middles/token');
+
+/*
+const serviceLocator = require('./util/serviceLocator')();
+
+serviceLocator.register('db', require('./database/conn'));
+serviceLocator.factory('dbUsers', require('./database/dbUsers'));
+//serviceLocator.factory('userService', require('./lib/userService'));
+serviceLocator.factory('usersRouter', usersRouter);
+*/
+const RES = require('./util/RES')
+const CoinGecko = require('./util/CoinGecko');
+const auth = require('./util/verify/auth');
+const verify = require('./util/verify/verify');
+
+const db = require('./database/conn');
+const dbUsers = require('./database/dbUsers')(RES,db);
+const indexRouter = require('./routes/index')(dbUsers,auth,verify,RES)
+const usersRouter = require('./routes/users')(dbUsers,CoinGecko,RES);
+
+
 
 const app = express();
 
@@ -23,12 +43,21 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+/*
 app.use('/', indexRouter);
 app.use('/index', indexRouter);
 app.use('', middleToken);
 app.use('/coins', coinsRouter);
 app.use('/users', usersRouter);
-
+*/
+app.get('/',indexRouter.index);
+app.post('/index/create', indexRouter.create);
+app.post('/index/login', indexRouter.login);
+app.use('', middleToken);
+app.put('/users', usersRouter.updateUser);
+app.get('/users/coins', usersRouter.getCoins)
+app.post('/users/coins', usersRouter.addCoin)
+app.delete('/users/coins/:id', usersRouter.deleteCoin)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

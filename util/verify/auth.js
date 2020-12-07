@@ -1,6 +1,8 @@
 
 const jwt= require('jsonwebtoken');
-const dbUsers= require('../../database/dbUsers');
+const RES=require('../RES');
+const db=require('../../database/conn');
+const dbUsers= require('../../database/dbUsers')(RES,db);
 
 const verifyUser=(user,cb)=>{
   let passHash=generateHash(String(user.pass));
