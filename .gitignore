@@ -74,7 +74,7 @@ typings/
 .yarn-integrity
 
 # dotenv environment variables file
-.env
+#.env
 .env.test
 .env*.local
 
@@ -112,5 +112,8 @@ dist
 
 # Stores VSCode versions used for testing VSCode extensions
 .vscode-test
+
+# Others
+other/
 
 # End of https://www.toptal.com/developers/gitignore/api/node
