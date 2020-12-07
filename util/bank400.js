@@ -1,3 +1,4 @@
+
 module.exports={
 	BAD_LOGIN: {
 		es: 'Los datos ingresados son incorrectos.',
@@ -43,5 +44,4 @@ module.exports={
 		es: ' no encontrado.',
 		es: ' not found.'
 	}
-	
 }

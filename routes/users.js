@@ -1,10 +1,3 @@
-/*
-const express = require('express');
-const router = express.Router();
-const dbUsers = require('../database/dbUsers');
-const CoinGecko = require('../util/CoinGecko');
-const RES = require('../util/RES');
-*/
 
 module.exports = (dbUsers,CoinGecko,verify,RES)=> {
 
@@ -12,7 +5,7 @@ module.exports = (dbUsers,CoinGecko,verify,RES)=> {
 
  return {
  addCoin: (req, res)=> {
-  let id = req.body.id || 'someCoin'; 
+  let id = req.body.id || 'No_exists'; 
   let currency = req.who.prefer_currency;
   
   CoinGecko.getOneCoin(id, currency)
@@ -28,7 +21,7 @@ module.exports = (dbUsers,CoinGecko,verify,RES)=> {
   	  })
   	}
   })
-},
+ },
 
  getCoins: (req, res)=> {
   let top = req.query.top || req.who.prefer_top || 25;
@@ -40,7 +33,7 @@ module.exports = (dbUsers,CoinGecko,verify,RES)=> {
   	else
       CoinGecko.getPrices(coins.map(c=>c.id))
   	  .then(geckoData=>{
-        let funcOrder = req.query.order=='asc'? (a,b)=>a.eur_price - b.eur_price : (a,b)=>b.eur_price - a.eur_price;
+        let funcOrder = req.query.order=='asc'? (a,b)=>a.eur - b.eur : (a,b)=>b.eur - a.eur;
   	  	
         coins = coins.map(c=> ({ ...c, ...geckoData[c.id] }));
         coins = coins.sort(funcOrder);
@@ -49,14 +42,13 @@ module.exports = (dbUsers,CoinGecko,verify,RES)=> {
   	  })
   	  .catch(e=> res.status(400).send(new RES.e400(400, 'GECKO_ERROR', req.lang, JSON.stringify(e))))
   });
-},
+ },
 
  deleteCoin: (req, res)=> {
   let id = req.params.id;
   dbUsers.deleteCoin(req.id, id);
   res.status(204).send(new RES.ok(204))
-},
-
+ },
 
  updateUser: async(req,res)=>{
   let edit = {
@@ -72,9 +64,6 @@ module.exports = (dbUsers,CoinGecko,verify,RES)=> {
       if(e) res.status(500).send(new RES.error(e))
       else res.status(204).send(new RES.ok(204))
     })
+ }
+ }
 }
-
-}
-}
-
-//module.exports = router;
