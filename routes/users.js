@@ -6,12 +6,10 @@ const CoinGecko = require('../util/CoinGecko');
 const RES = require('../util/RES');
 */
 
-module.exports = (dbUsers,CoinGecko,RES)=> {
- //express = require('express')
- //router = express.Router()
- //dbUsers = require('../database/dbUsers')
- //CoinGecko = require('../util/CoinGecko')
- //RES = require('../util/RES')
+module.exports = (dbUsers,CoinGecko,verify,RES)=> {
+
+ const { verifyFields } = verify;
+
  return {
  addCoin: (req, res)=> {
   let id = req.body.id || 'someCoin'; 
@@ -34,7 +32,7 @@ module.exports = (dbUsers,CoinGecko,RES)=> {
 
  getCoins: (req, res)=> {
   let top = req.query.top || req.who.prefer_top || 25;
-  let users_coins = new Promise(done=> dbUsers.getCoins(req.id, coins=> done(coins)))
+  let users_coins = new Promise(done=> dbUsers.getCoins(req.id, top, coins=> done(coins)))
 
   if(top<1 || top>25) res.status(400).send(new RES.e400(400, 'INVALID_TOP_N', req.lang));
   else users_coins.then(coins=>{
@@ -67,7 +65,7 @@ module.exports = (dbUsers,CoinGecko,RES)=> {
     prefer_currency: req.body.prefer_currency || 'usd'
   }
 
-  let bad = await verifyFields(edit, req.lang)
+  let bad = await verifyFields('users',edit, req.lang)
   if(bad) res.status(400).send(new RES.e400(400, 'INPUT_ERROR', req.lang, bad))
   else
     dbUsers.updateUser(edit, (e,ok)=>{

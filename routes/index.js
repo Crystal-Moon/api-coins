@@ -8,7 +8,7 @@
 
 module.exports = (dbUsers,auth,verify,RES)=> {
 
-  const { verifyFields } = auth;
+  const { verifyFields } = verify;
 
   return {
  index: (req, res)=> {
@@ -32,7 +32,7 @@ module.exports = (dbUsers,auth,verify,RES)=> {
     newUser.pass = auth.generateHash(newUser.pass);
     newUser.lang = lang;
 
-    dbUsers.authUser(newUser.username,(e,user)=> {
+    dbUsers.authUser(newUser,(e,user)=> {
     if(e) res.status(500).send(new RES.error(e));
     else if(user) res.status(400).send(new RES.e400(400, 'EXISTS', lang, newUser.username ));
     else

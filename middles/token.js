@@ -1,10 +1,17 @@
-const express = require('express');
-const router = express.Router();
+//const express = require('express');
+//const router = express.Router();
 
+/*
 const RES=require('../util/RES');
 const auth=require('../util/verify/auth');
+*/
+//const sl = require('../util/serviceLocator')();
+//const auth = sl.get('auth');
+//const RES = sl.get('RES');
 
-router.use((req,res,next)=>{
+module.exports=(auth,RES)=>{
+  return {
+  all:(req,res,next)=>{
   if(!req.headers.authorization && !req.headers.Authorization)
     res.status(401).send(new RES.e400(401,'NO_TOKEN','es'));
   else{
@@ -20,6 +27,8 @@ router.use((req,res,next)=>{
       }
     });
   }
-});
+}
+}
+}
 
-module.exports = router;
+//module.exports = router;

@@ -1,10 +1,7 @@
 
-//const CoinGecko = require('../util/CoinGecko');
+module.exports=(mysql)=>{
 
-module.exports=(mysql, CoinGecko)=>{
-
-
-const pool={
+  const pool={
     connectionLimit : 1000,
     connectTimeout  : 60 * 60 * 1000,
     acquireTimeout  : 60 * 60 * 1000,
@@ -16,21 +13,14 @@ const pool={
     multipleStatements: true,
     connectionLimit: 20,
     charset: 'UTF8MB4'
+  }
+
+  const db = mysql.createPool(pool);
+
+  return {
+    pool: db,
+    status: ()=> new Promise((done,fail)=>{ db.getConnection((err, conn)=> {
+      if(err) fail(JSON.stringify(e)); else{ conn.release(); done() } })
+    })
+  }
 }
-
-const db = mysql.createPool(pool);
-
-//conexion de prueba
-
-
-
-
-return {
-  db,
-  status: ()=> new Promise((done,fail)=>{ db.getConnection((err, conn)=> {
-     if(err) fail(JSON.stringify(e)); else{ conn.release(); done() } })
-  })
-}
-
-}
-//module.exports=db;

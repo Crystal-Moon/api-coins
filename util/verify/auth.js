@@ -18,12 +18,12 @@ module.exports = (jwt,dbUsers)=>{
   })
 }
 
-const decodeToken=(token,cb)=>{
-  jwt.verify(token, process.env.JWT_KEY, cb);
-}
+
 
   return {
     objAuth,
+    generateHash,
+
  verifyUser:(user,cb)=>{
   let passHash=generateHash(String(user.pass));
   dbUsers.authUser(user, (err, userDB)=> {
@@ -38,6 +38,10 @@ const decodeToken=(token,cb)=>{
   });
 },
 
+
+ decodeToken:(token,cb)=>{
+  jwt.verify(token, process.env.JWT_KEY, cb);
+}
  
 
 
